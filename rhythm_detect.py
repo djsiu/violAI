@@ -66,10 +66,8 @@ class ScoreViewer(QWidget):
         self.speed_option.currentIndexChanged.connect(self.update_speed)
         
         # plot for errors
-        sc = MplCanvas(self, width=5, height=4, dpi=100)
-        self.plot_rhythm(sc)
-        
-        layout.addWidget(sc, 6, 0)
+        self.graph = MplCanvas(self, width=5, height=4, dpi=100)
+        layout.addWidget(self.graph, 6, 0)
         
         layout.addWidget(self.open_file_button, 0, 0)
         layout.addWidget(self.label, 1, 0)
@@ -80,18 +78,18 @@ class ScoreViewer(QWidget):
         
         self.setLayout(layout)
         
-    def plot_rhythm(self, graph): 
+    def plot_rhythm(self, user_rhythm_ts): 
         actual_rhythm_ts = [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 4.5]
-        user_rhythm_ts = [1.05, 1.5, 2.1, 2.4, 2.9, 3.8, 4.58] 
 
-        graph.axes.plot(actual_rhythm_ts, [0] * len(actual_rhythm_ts), 'ko', markersize=10, label='Actual') # The [0] * len(actual_rhythm_ts) puts all the points on the same y axis
-        graph.axes.plot(user_rhythm_ts, [0] * len(user_rhythm_ts), 'ro', markersize=15, label='Your Rhythm', alpha=0.4)
+        self.graph.axes.plot(actual_rhythm_ts, [0] * len(actual_rhythm_ts), 'ko', markersize=10, label='Actual') # The [0] * len(actual_rhythm_ts) puts all the points on the same y axis
+        self.graph.axes.plot(user_rhythm_ts, [0] * len(user_rhythm_ts), 'ro', markersize=15, label='Your Rhythm', alpha=0.4)
 
-        graph.axes.set_xlim(0, 5)  # x-axis limit
-        graph.axes.set_yticks([])  # removing y-ticks
-        graph.axes.set_xlabel("Time (s)")
-        graph.axes.set_title("Rhythm Analysis")
-        graph.axes.legend()
+        self.graph.axes.set_xlim(0, 5)  # x-axis limit
+        self.graph.axes.set_yticks([])  # removing y-ticks
+        self.graph.axes.set_xlabel("Time (s)")
+        self.graph.axes.set_title("Rhythm Analysis")
+        self.graph.axes.legend()
+        self.graph.draw()
 
         # graph.tight_layout() # maybe take out?
         
@@ -216,6 +214,7 @@ class ScoreViewer(QWidget):
             return None  # Explicitly return None on error
         
         beat_times = self.analyze_rhythm(filename)
+        self.plot_rhythm(beat_times)
         print(beat_times)
         
 if __name__ == "__main__":
